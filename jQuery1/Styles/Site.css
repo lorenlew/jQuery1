@@ -1,0 +1,16 @@
+﻿main {
+    overflow: hidden;
+}
+
+main div {
+    float: left;
+    background-color: #0094ff;
+    margin: 10px;
+    width: 320px;
+    height: 320px;
+}
+
+
+.in-view {
+    background-color: #ff0000;
+}
