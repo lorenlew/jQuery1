@@ -1,33 +1,47 @@
-﻿(function ($) {
+﻿(function ($)
+{
+    var scrollToTheTop = $(window).scrollTop();
+    var scrollToTheLeft = $(window).scrollLeft();
 
-    $.isHiddenAtTheBottom = function (element) {
-        var upper = $(window).height() + $(window).scrollTop();
-        return upper < $(element).offset().top;
+    function isNotBelowWindowBottom(element, elementOffsetTop)
+    {
+        var windowBottomOffsetTop = $(window).height() + scrollToTheTop;
+        return !(elementOffsetTop > windowBottomOffsetTop);
     };
 
-    $.isHiddenAtTheTop = function (element) {
-        var scrollTop = $(window).scrollTop();
-        return scrollTop > $(element).offset().top + $(element).height();
+    function isNotAboveWindowTop(element, elementOffsetTop)
+    {
+        var bottomOfElementOffsetTop = elementOffsetTop + $(element).height();
+        return !(bottomOfElementOffsetTop < scrollToTheTop);
     };
 
-    $.isHiddenOnTheRight = function (element) {
-        var fromLeft = $(window).width() + $(window).scrollLeft();
-        return fromLeft < $(element).offset().left;
+    function isNotToTheRightOfWindowRightSide(element, elementOffsetLeft)
+    {
+        var rightSideOfWindowOffsetLeft = $(window).width() + scrollToTheLeft;
+        return !(elementOffsetLeft > rightSideOfWindowOffsetLeft);
     };
 
-    $.isHiddenOnTheLeft = function (element) {
-        var scrollLeft = $(window).scrollLeft();
-        return scrollLeft > $(element).offset().left + $(element).width();
+    function isNotToTheLeftOfWindowLeftSide(element, elementOffsetLeft)
+    {
+        var rightSideOfElementOffsetLeft = elementOffsetLeft + $(element).width();
+        return !(rightSideOfElementOffsetLeft < scrollToTheLeft);
     };
 
-    $.inView = function (element) {
-        var isInView = !$.isHiddenAtTheBottom(element) && !$.isHiddenAtTheTop(element)
-                       && !$.isHiddenOnTheRight(element) && !$.isHiddenOnTheLeft(element);
+    $.inView = function (element)
+    {
+        var elementOffsetTop = $(element).offset().top;
+        var elementOffsetLeft = $(element).offset().left;
+
+        var isInView = isNotBelowWindowBottom(element, elementOffsetTop) &&
+                       isNotAboveWindowTop(element, elementOffsetTop) &&
+                       isNotToTheRightOfWindowRightSide(element, elementOffsetLeft) &&
+                       isNotToTheLeftOfWindowLeftSide(element, elementOffsetLeft);
         return isInView;
     };
 
     $.extend($.expr[':'], {
-        "in-view": function (a) {
+        "in-view": function (a)
+        {
             return $.inView(a);
         }
     });
