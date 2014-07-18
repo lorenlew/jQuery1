@@ -1,48 +1,44 @@
-﻿(function ($)
-{
-    var scrollToTheTop = $(window).scrollTop();
-    var scrollToTheLeft = $(window).scrollLeft();
+﻿(function ($) {
+    'use strict';
 
-    function isNotBelowWindowBottom(element, elementOffsetTop)
-    {
-        var windowBottomOffsetTop = $(window).height() + scrollToTheTop;
-        return !(elementOffsetTop > windowBottomOffsetTop);
-    };
+    function isViewableFromBottom ($element, $window) {
+        var elementBottomBorderOffsetTop = $element.offset().top + $element.height();
+        var topHeight = $window.scrollTop() + $window.height();
+        return elementBottomBorderOffsetTop <= topHeight;
+    }
 
-    function isNotAboveWindowTop(element, elementOffsetTop)
-    {
-        var bottomOfElementOffsetTop = elementOffsetTop + $(element).height();
-        return !(bottomOfElementOffsetTop < scrollToTheTop);
-    };
+    function isViewableFromTop ($element, $window) {
+        var scrollToTheTop = $window.scrollTop();
+        var elementOffsetTop = $element.offset().top;;
+        return elementOffsetTop >= scrollToTheTop;
+    }
 
-    function isNotToTheRightOfWindowRightSide(element, elementOffsetLeft)
-    {
-        var rightSideOfWindowOffsetLeft = $(window).width() + scrollToTheLeft;
-        return !(elementOffsetLeft > rightSideOfWindowOffsetLeft);
-    };
+    function isViewableFromRight ($element, $window) {
+        var leftWidth = $window.scrollLeft() + $window.width();
+        var elementRightBorderOffsetLeft = $element.offset().left + $element.width();
+        return elementRightBorderOffsetLeft <= leftWidth;
+    }
 
-    function isNotToTheLeftOfWindowLeftSide(element, elementOffsetLeft)
-    {
-        var rightSideOfElementOffsetLeft = elementOffsetLeft + $(element).width();
-        return !(rightSideOfElementOffsetLeft < scrollToTheLeft);
-    };
+    function isViewableFromLeft ($element, $window) {
+        var elementOffsetLeft = $element.offset().left;
+        var scrollToTheLeft = $window.scrollLeft();
+        return elementOffsetLeft >= scrollToTheLeft;
+    }
 
-    $.inView = function (element)
-    {
-        var elementOffsetTop = $(element).offset().top;
-        var elementOffsetLeft = $(element).offset().left;
+    $.inView = function (element) {
 
-        var isInView = isNotBelowWindowBottom(element, elementOffsetTop) &&
-                       isNotAboveWindowTop(element, elementOffsetTop) &&
-                       isNotToTheRightOfWindowRightSide(element, elementOffsetLeft) &&
-                       isNotToTheLeftOfWindowLeftSide(element, elementOffsetLeft);
+        var $window = $(window);
+        var $element = $(element);
+        var isInView = isViewableFromBottom($element, $window) &&
+            isViewableFromTop($element, $window) &&
+            isViewableFromRight($element, $window) &&
+            isViewableFromLeft($element, $window);
         return isInView;
     };
 
     $.extend($.expr[':'], {
-        "in-view": function (a)
-        {
-            return $.inView(a);
+        'in-view': function (element) {
+            return $.inView(element);
         }
     });
 
